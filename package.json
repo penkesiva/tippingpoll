@@ -1,25 +1,53 @@
 {
   "name": "tippingpoll",
   "version": "1.0.0",
-  "description": "A tipping awareness site with real-time voting data",
-  "main": "index.html",
+  "description": "A tipping awareness site with real-time voting data and interactive US map",
+  "main": "index.js",
   "scripts": {
-    "dev": "vercel dev",
-    "build": "echo 'No build step needed for static site'",
-    "start": "vercel dev"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "dev": "react-scripts start"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.38.0"
+    "@supabase/supabase-js": "^2.38.0",
+    "@types/node": "^16.18.126",
+    "@types/react": "^18.3.23",
+    "@types/react-dom": "^18.3.7",
+    "d3-format": "^3.1.0",
+    "d3-scale": "^4.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "^5.0.1",
+    "react-simple-maps": "^3.0.0",
+    "topojson-client": "^3.1.0",
+    "typescript": "^4.9.5"
   },
   "devDependencies": {
     "vercel": "^32.0.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   },
   "keywords": [
     "tipping",
     "poll",
     "voting",
     "supabase",
-    "vercel"
+    "vercel",
+    "react",
+    "us-map",
+    "interactive"
   ],
   "author": "Your Name",
   "license": "MIT"

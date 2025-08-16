@@ -3,10 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Should Tipping Large Amounts for Coffee Be Expected? | TippingPoll</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>TippingPoll - How America Votes on Tipping</title>
+    
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- React and React DOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css?v=2.0">
 </head>
 <body>
     <!-- Header / Quick Poll Section -->
@@ -70,232 +83,15 @@
         </div>
     </header>
 
-    <!-- Interactive U.S. Map Section -->
+    <!-- Map Section - Temporarily Hidden -->
+    <!--
     <section class="map-section">
         <div class="container">
             <h2>How America Votes</h2>
             <div class="map-layout">
                 <div class="map-main">
-                    <div class="map-container">
-                        <div class="us-map">
-                            <svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
-                                <!-- Alaska -->
-                                <path class="state" data-state="AK" data-yes="45" data-no="40" data-depends="15" d="M50,50 L150,50 L150,100 L50,100 Z" />
-                                <text x="100" y="80" class="state-label">AK</text>
-                                
-                                <!-- Hawaii -->
-                                <path class="state" data-state="HI" data-yes="52" data-no="35" data-depends="13" d="M900,50 L950,50 L950,80 L900,80 Z" />
-                                <text x="925" y="65" class="state-label">HI</text>
-                                
-                                <!-- Washington -->
-                                <path class="state" data-state="WA" data-yes="58" data-no="32" data-depends="10" d="M100,150 L180,150 L180,200 L100,200 Z" />
-                                <text x="140" y="175" class="state-label">WA</text>
-                                
-                                <!-- Oregon -->
-                                <path class="state" data-state="OR" data-yes="55" data-no="35" data-depends="10" d="M100,200 L180,200 L180,250 L100,250 Z" />
-                                <text x="140" y="225" class="state-label">OR</text>
-                                
-                                <!-- California -->
-                                <path class="state" data-state="CA" data-yes="48" data-no="42" data-depends="10" d="M100,250 L180,250 L180,350 L100,350 Z" />
-                                <text x="140" y="300" class="state-label">CA</text>
-                                
-                                <!-- Nevada -->
-                                <path class="state" data-state="NV" data-yes="42" data-no="48" data-depends="10" d="M180,250 L220,250 L220,300 L180,300 Z" />
-                                <text x="200" y="275" class="state-label">NV</text>
-                                
-                                <!-- Idaho -->
-                                <path class="state" data-state="ID" data-yes="38" data-no="52" data-depends="10" d="M220,150 L280,150 L280,200 L220,200 Z" />
-                                <text x="250" y="175" class="state-label">ID</text>
-                                
-                                <!-- Utah -->
-                                <path class="state" data-state="UT" data-yes="35" data-no="55" data-depends="10" d="M220,200 L280,200 L280,250 L220,250 Z" />
-                                <text x="250" y="225" class="state-label">UT</text>
-                                
-                                <!-- Arizona -->
-                                <path class="state" data-state="AZ" data-yes="45" data-no="45" data-depends="10" d="M220,250 L280,250 L280,300 L220,300 Z" />
-                                <text x="250" y="275" class="state-label">AZ</text>
-                                
-                                <!-- Montana -->
-                                <path class="state" data-state="MT" data-yes="62" data-no="28" data-depends="10" d="M280,100 L340,100 L340,150 L280,150 Z" />
-                                <text x="310" y="125" class="state-label">MT</text>
-                                
-                                <!-- Wyoming -->
-                                <path class="state" data-state="WY" data-yes="58" data-no="32" data-depends="10" d="M280,150 L340,150 L340,200 L280,200 Z" />
-                                <text x="310" y="175" class="state-label">WY</text>
-                                
-                                <!-- Colorado -->
-                                <path class="state" data-state="CO" data-yes="65" data-no="25" data-depends="10" d="M280,200 L340,200 L340,250 L280,250 Z" />
-                                <text x="310" y="225" class="state-label">CO</text>
-                                
-                                <!-- New Mexico -->
-                                <path class="state" data-state="NM" data-yes="42" data-no="48" data-depends="10" d="M280,250 L340,250 L340,300 L280,300 Z" />
-                                <text x="310" y="275" class="state-label">NM</text>
-                                
-                                <!-- North Dakota -->
-                                <path class="state" data-state="ND" data-yes="55" data-no="35" data-depends="10" d="M340,100 L400,100 L400,150 L340,150 Z" />
-                                <text x="370" y="125" class="state-label">ND</text>
-                                
-                                <!-- South Dakota -->
-                                <path class="state" data-state="SD" data-yes="52" data-no="38" data-depends="10" d="M340,150 L400,150 L400,200 L340,200 Z" />
-                                <text x="370" y="175" class="state-label">SD</text>
-                                
-                                <!-- Nebraska -->
-                                <path class="state" data-state="NE" data-yes="48" data-no="42" data-depends="10" d="M340,200 L400,200 L400,250 L340,250 Z" />
-                                <text x="370" y="225" class="state-label">NE</text>
-                                
-                                <!-- Kansas -->
-                                <path class="state" data-state="KS" data-yes="45" data-no="45" data-depends="10" d="M340,250 L400,250 L400,300 L340,300 Z" />
-                                <text x="370" y="275" class="state-label">KS</text>
-                                
-                                <!-- Oklahoma -->
-                                <path class="state" data-state="OK" data-yes="38" data-no="52" data-depends="10" d="M400,250 L460,250 L460,300 L400,300 Z" />
-                                <text x="430" y="275" class="state-label">OK</text>
-                                
-                                <!-- Texas -->
-                                <path class="state" data-state="TX" data-yes="25" data-no="65" data-depends="10" d="M400,300 L500,300 L500,400 L400,400 Z" />
-                                <text x="450" y="350" class="state-label">TX</text>
-                                
-                                <!-- Minnesota -->
-                                <path class="state" data-state="MN" data-yes="62" data-no="28" data-depends="10" d="M400,100 L460,100 L460,150 L400,150 Z" />
-                                <text x="430" y="125" class="state-label">MN</text>
-                                
-                                <!-- Iowa -->
-                                <path class="state" data-state="IA" data-yes="55" data-no="35" data-depends="10" d="M400,150 L460,150 L460,200 L400,200 Z" />
-                                <text x="430" y="175" class="state-label">IA</text>
-                                
-                                <!-- Missouri -->
-                                <path class="state" data-state="MO" data-yes="42" data-no="48" data-depends="10" d="M400,200 L460,200 L460,250 L400,250 Z" />
-                                <text x="430" y="225" class="state-label">MO</text>
-                                
-                                <!-- Arkansas -->
-                                <path class="state" data-state="AR" data-yes="35" data-no="55" data-depends="10" d="M460,250 L500,250 L500,300 L460,300 Z" />
-                                <text x="480" y="275" class="state-label">AR</text>
-                                
-                                <!-- Louisiana -->
-                                <path class="state" data-state="LA" data-yes="38" data-no="52" data-depends="10" d="M460,300 L500,300 L500,350 L460,350 Z" />
-                                <text x="480" y="325" class="state-label">LA</text>
-                                
-                                <!-- Mississippi -->
-                                <path class="state" data-state="MS" data-yes="32" data-no="58" data-depends="10" d="M500,300 L540,300 L540,350 L500,350 Z" />
-                                <text x="520" y="325" class="state-label">MS</text>
-                                
-                                <!-- Alabama -->
-                                <path class="state" data-state="AL" data-yes="35" data-no="55" data-depends="10" d="M500,350 L540,350 L540,400 L500,400 Z" />
-                                <text x="520" y="375" class="state-label">AL</text>
-                                
-                                <!-- Georgia -->
-                                <path class="state" data-state="GA" data-yes="42" data-no="48" data-depends="10" d="M540,350 L580,350 L580,400 L540,400 Z" />
-                                <text x="560" y="375" class="state-label">GA</text>
-                                
-                                <!-- Florida -->
-                                <path class="state" data-state="FL" data-yes="45" data-no="45" data-depends="10" d="M540,400 L600,400 L600,500 L540,500 Z" />
-                                <text x="570" y="450" class="state-label">FL</text>
-                                
-                                <!-- Tennessee -->
-                                <path class="state" data-state="TN" data-yes="38" data-no="52" data-depends="10" d="M500,300 L540,300 L540,350 L500,350 Z" />
-                                <text x="520" y="325" class="state-label">TN</text>
-                                
-                                <!-- Kentucky -->
-                                <path class="state" data-state="KY" data-yes="42" data-no="48" data-depends="10" d="M500,250 L540,250 L540,300 L500,300 Z" />
-                                <text x="520" y="275" class="state-label">KY</text>
-                                
-                                <!-- Indiana -->
-                                <path class="state" data-state="IN" data-yes="45" data-no="45" data-depends="10" d="M460,200 L500,200 L500,250 L460,250 Z" />
-                                <text x="480" y="225" class="state-label">IN</text>
-                                
-                                <!-- Illinois -->
-                                <path class="state" data-state="IL" data-yes="58" data-no="32" data-depends="10" d="M460,150 L500,150 L500,200 L460,200 Z" />
-                                <text x="480" y="175" class="state-label">IL</text>
-                                
-                                <!-- Wisconsin -->
-                                <path class="state" data-state="WI" data-yes="62" data-no="28" data-depends="10" d="M460,100 L500,100 L500,150 L460,150 Z" />
-                                <text x="480" y="125" class="state-label">WI</text>
-                                
-                                <!-- Michigan -->
-                                <path class="state" data-state="MI" data-yes="55" data-no="35" data-depends="10" d="M500,100 L540,100 L540,150 L500,150 Z" />
-                                <text x="520" y="125" class="state-label">MI</text>
-                                
-                                <!-- Ohio -->
-                                <path class="state" data-state="OH" data-yes="48" data-no="42" data-depends="10" d="M500,200 L540,200 L540,250 L500,250 Z" />
-                                <text x="520" y="225" class="state-label">OH</text>
-                                
-                                <!-- Pennsylvania -->
-                                <path class="state" data-state="PA" data-yes="65" data-no="25" data-depends="10" d="M540,200 L580,200 L580,250 L540,250 Z" />
-                                <text x="560" y="225" class="state-label">PA</text>
-                                
-                                <!-- New York -->
-                                <path class="state" data-state="NY" data-yes="68" data-no="22" data-depends="10" d="M540,150 L580,150 L580,200 L540,200 Z" />
-                                <text x="560" y="175" class="state-label">NY</text>
-                                
-                                <!-- New Jersey -->
-                                <path class="state" data-state="NJ" data-yes="62" data-no="28" data-depends="10" d="M540,250 L580,250 L580,300 L540,300 Z" />
-                                <text x="560" y="275" class="state-label">NJ</text>
-                                
-                                <!-- Connecticut -->
-                                <path class="state" data-state="CT" data-yes="58" data-no="32" data-depends="10" d="M580,200 L600,200 L600,250 L580,250 Z" />
-                                <text x="590" y="225" class="state-label">CT</text>
-                                
-                                <!-- Rhode Island -->
-                                <path class="state" data-state="RI" data-yes="55" data-no="35" data-depends="10" d="M580,250 L600,250 L600,300 L580,300 Z" />
-                                <text x="590" y="275" class="state-label">RI</text>
-                                
-                                <!-- Massachusetts -->
-                                <path class="state" data-state="MA" data-yes="65" data-no="25" data-depends="10" d="M580,150 L600,150 L600,200 L580,200 Z" />
-                                <text x="590" y="175" class="state-label">MA</text>
-                                
-                                <!-- Vermont -->
-                                <path class="state" data-state="VT" data-yes="68" data-no="22" data-depends="10" d="M580,100 L600,100 L600,150 L580,150 Z" />
-                                <text x="590" y="125" class="state-label">VT</text>
-                                
-                                <!-- New Hampshire -->
-                                <path class="state" data-state="NH" data-yes="62" data-no="28" data-depends="10" d="M600,100 L620,100 L620,150 L600,150 Z" />
-                                <text x="610" y="125" class="state-label">NH</text>
-                                
-                                <!-- Maine -->
-                                <path class="state" data-state="ME" data-yes="65" data-no="25" data-depends="10" d="M600,50 L620,50 L620,100 L600,100 Z" />
-                                <text x="610" y="75" class="state-label">ME</text>
-                                
-                                <!-- Maryland -->
-                                <path class="state" data-state="MD" data-yes="58" data-no="32" data-depends="10" d="M580,300 L600,300 L600,350 L580,350 Z" />
-                                <text x="590" y="325" class="state-label">MD</text>
-                                
-                                <!-- Delaware -->
-                                <path class="state" data-state="DE" data-yes="55" data-no="35" data-depends="10" d="M580,350 L600,350 L600,400 L580,400 Z" />
-                                <text x="590" y="375" class="state-label">DE</text>
-                                
-                                <!-- Virginia -->
-                                <path class="state" data-state="VA" data-yes="52" data-no="38" data-depends="10" d="M600,300 L640,300 L640,350 L600,350 Z" />
-                                <text x="620" y="325" class="state-label">VA</text>
-                                
-                                <!-- West Virginia -->
-                                <path class="state" data-state="WV" data-yes="38" data-no="52" data-depends="10" d="M600,250 L640,250 L640,300 L600,300 Z" />
-                                <text x="620" y="275" class="state-label">WV</text>
-                                
-                                <!-- North Carolina -->
-                                <path class="state" data-state="NC" data-yes="45" data-no="45" data-depends="10" d="M600,350 L640,350 L640,400 L600,400 Z" />
-                                <text x="620" y="375" class="state-label">NC</text>
-                                
-                                <!-- South Carolina -->
-                                <path class="state" data-state="SC" data-yes="42" data-no="48" data-depends="10" d="M600,400 L640,400 L640,450 L600,450 Z" />
-                                <text x="620" y="425" class="state-label">SC</text>
-                            </svg>
-                        </div>
-                        
-                        <div class="map-legend">
-                            <div class="legend-item">
-                                <span class="legend-color yes-color"></span>
-                                <span>Yes (Majority)</span>
-                            </div>
-                            <div class="legend-item">
-                                <span class="legend-color no-color"></span>
-                                <span>No (Majority)</span>
-                            </div>
-                            <div class="legend-item">
-                                <span class="legend-color depends-color"></span>
-                                <span>Depends (Majority)</span>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- React US Map will be rendered here -->
+                    <div id="us-map-root"></div>
                 </div>
                 
                 <!-- Google Ads Placeholder -->
@@ -310,7 +106,144 @@
             </div>
         </div>
     </section>
+    -->
 
+    <!-- Tipping Calculator Section -->
+    <section class="calculator-section">
+        <div class="container">
+            <h2>Tipping Calculator</h2>
+            <div class="calculator-content">
+                <div class="calculator-inputs">
+                    <div class="input-group">
+                        <label for="bill-amount">Bill Amount</label>
+                        <div class="bill-input">
+                            <span class="currency">$</span>
+                            <input type="number" id="bill-amount" placeholder="0.00" min="0" step="0.01">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Tip Percentage</label>
+                        <div class="tip-buttons">
+                            <button class="tip-btn" data-tip="10">10%</button>
+                            <button class="tip-btn" data-tip="15">15%</button>
+                            <button class="tip-btn active" data-tip="20">20%</button>
+                            <button class="tip-btn" data-tip="25">25%</button>
+                            <button class="tip-btn" data-tip="30">30%</button>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="custom-tip">Custom Tip %</label>
+                        <input type="number" id="custom-tip" placeholder="18" min="0" max="100">
+                    </div>
+                </div>
+                
+                <div class="calculator-results">
+                    <div class="result-item">
+                        <span class="label">Tip Amount:</span>
+                        <span class="value" id="tip-amount">$0.00</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">Total Bill:</span>
+                        <span class="value" id="total-bill">$0.00</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">Per Person:</span>
+                        <span class="value" id="per-person">$0.00</span>
+                    </div>
+                    
+                    <!-- Split Bill Controls moved here -->
+                    <div class="split-controls">
+                        <label for="split-count">Split Bill:</label>
+                        <div class="split-input">
+                            <button class="split-btn" id="split-minus">-</button>
+                            <input type="number" id="split-count" value="1" min="1" max="20">
+                            <button class="split-btn" id="split-plus">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- AI Tipping Advisor Section -->
+    <section class="ai-advisor-section">
+        <div class="container">
+            <h2>AI Tipping Advisor</h2>
+            
+            <div class="ai-advisor-content">
+                <div class="prompt-input-section">
+                    <div class="prompt-header">
+                        <div class="ai-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h3>Describe Your Situation</h3>
+                    </div>
+                    
+                    <div class="prompt-input-container">
+                        <textarea 
+                            id="custom-scenario-text" 
+                            placeholder="e.g., I'm getting a massage at a spa, the service was excellent, and I'm in California. The massage costs $120 for 90 minutes..."
+                            rows="4"
+                        ></textarea>
+                        <button class="get-advice-btn" id="get-advice-btn">
+                            <i class="fas fa-lightbulb"></i>
+                            Get AI Advice
+                        </button>
+                    </div>
+                    
+                    <div class="quick-scenarios">
+                        <p class="quick-label">Quick examples:</p>
+                        <div class="scenario-chips">
+                            <button class="scenario-chip" data-scenario="restaurant">Restaurant dining</button>
+                            <button class="scenario-chip" data-scenario="delivery">Food delivery</button>
+                            <button class="scenario-chip" data-scenario="coffee">Coffee shop</button>
+                            <button class="scenario-chip" data-scenario="barber">Hair salon</button>
+                            <button class="scenario-chip" data-scenario="hotel">Hotel service</button>
+                            <button class="scenario-chip" data-scenario="rideshare">Rideshare</button>
+                            <button class="scenario-chip" data-scenario="massage">Spa & massage</button>
+                            <button class="scenario-chip" data-scenario="moving">Moving service</button>
+                            <button class="scenario-chip" data-scenario="pet">Pet grooming</button>
+                            <button class="scenario-chip" data-scenario="cleaning">House cleaning</button>
+                            <button class="scenario-chip" data-scenario="tattoo">Tattoo artist</button>
+                            <button class="scenario-chip" data-scenario="photography">Photographer</button>
+                            <button class="scenario-chip" data-scenario="tutoring">Tutoring</button>
+                            <button class="scenario-chip" data-scenario="fitness">Personal trainer</button>
+                            <button class="scenario-chip" data-scenario="beauty">Makeup artist</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ai-recommendation">
+                    <div class="recommendation-header">
+                        <h3>AI Recommendation</h3>
+                    </div>
+                    
+                    <div class="recommendation-content" id="ai-recommendation">
+                        <div class="default-message">
+                            <div class="ai-illustration">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <p>Describe your tipping situation above to get personalized AI advice!</p>
+                        </div>
+                    </div>
+                    
+                    <div class="recommendation-actions" id="recommendation-actions" style="display: none;">
+                        <button class="action-btn" id="regenerate-btn">
+                            <i class="fas fa-sync-alt"></i>
+                            New Advice
+                        </button>
+                        <button class="action-btn" id="copy-btn">
+                            <i class="fas fa-copy"></i>
+                            Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
     <!-- User Experiences / Stories Section -->
     <section class="stories-section">
         <div class="container">
@@ -392,32 +325,39 @@
             
             <div class="comments-layout">
                 <div class="comments-main">
-                    <div class="comments-container">
-                        <div class="comment" data-likes="35" data-dislikes="18" data-timestamp="2024-08-14T20:00:00">
-                            <div class="comment-header">
-                                <div class="comment-avatar">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <div class="comment-info">
-                                    <div class="comment-author">Elizabeth</div>
-                                    <div class="comment-text">Tips should be earned</div>
-                                </div>
-                            </div>
-                            <div class="comment-actions">
-                                <button class="action-btn like-btn">
-                                    <i class="fas fa-thumbs-up"></i>
-                                    <span>35</span>
-                                </button>
-                                <button class="action-btn dislike-btn">
-                                    <i class="fas fa-thumbs-down"></i>
-                                    <span>18</span>
-                                </button>
+                    <div class="comments-container" id="commentsContainer">
+                        <!-- Comments will be loaded here -->
+                    </div>
+                    
+                    <!-- Load More Comments Button -->
+                    <div class="load-more-section" id="loadMoreSection" style="display: none;">
+                        <button class="load-more-btn" onclick="loadMoreComments()">
+                            <i class="fas fa-chevron-down"></i>
+                            Load More Comments
+                        </button>
+                    </div>
+                    
+                    <div class="add-comment">
+                        <div class="comment-form-header">
+                            <h4>Share Your Thoughts</h4>
+                            <p>Join the discussion about tipping culture</p>
+                        </div>
+                        
+                        <div class="name-input-section">
+                            <label for="commenterName">Your Name (Optional):</label>
+                            <div class="name-input-group">
+                                <input type="text" id="commenterName" placeholder="Enter your name or choose anonymous">
+                                <button class="anonymous-btn" onclick="setAnonymous()">Anonymous</button>
                             </div>
                         </div>
-                    </div>
-                    <div class="add-comment">
-                        <textarea placeholder="Share your thoughts..." id="newComment"></textarea>
-                        <button class="btn btn-primary" onclick="addComment()">Post Comment</button>
+                        
+                        <div class="comment-input-section">
+                            <textarea placeholder="Share your thoughts on tipping..." id="newComment" rows="3"></textarea>
+                            <div class="comment-form-actions">
+                                <span class="char-count">0 characters</span>
+                                <button class="btn btn-primary" onclick="addComment()">Post Comment</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -483,6 +423,20 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+                    <!-- React US Map Component - Temporarily Hidden -->
+                <!--
+                <script src="src/components/USPollMap.js?v=2.0"></script>
+                -->
+    
+    <!-- Main JavaScript -->
+    <script src="script.js?v=2.0"></script>
+    
+    <!-- Debug script to check if everything loaded -->
+    <script>
+        console.log('All scripts loaded');
+        console.log('React version:', React.version);
+        console.log('ReactDOM version:', ReactDOM.version);
+        console.log('Map root element:', document.getElementById('us-map-root'));
+    </script>
 </body>
 </html>

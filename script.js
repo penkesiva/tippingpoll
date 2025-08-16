@@ -125,11 +125,17 @@ document.addEventListener('DOMContentLoaded', function() {
     randomizePollQuestion();
     
     initializePoll();
-    initializeMap();
+    // initializeMap(); // No longer needed - using React component
     initializeComments();
     initializeStoryModal();
     initializeFacts();
     loadCurrentPollResults(); // Load real data from Supabase
+    
+    // Initialize tipping calculator
+    initializeTippingCalculator();
+    
+    // Initialize AI tipping advisor
+    initializeAITippingAdvisor();
 });
 
 // Randomize the poll question
@@ -175,7 +181,7 @@ async function loadCurrentPollResults() {
             });
             
             // Update map colors based on real data
-            updateMapColorsFromRealData();
+            // updateMapColorsFromRealData(); // REMOVED
             
             // Update global poll results
             updateGlobalPollResults();
@@ -185,25 +191,6 @@ async function loadCurrentPollResults() {
         console.error('Error loading poll results:', error);
         // Fall back to default data if API fails
     }
-}
-
-// Update map colors based on real data from Supabase
-function updateMapColorsFromRealData() {
-    const states = document.querySelectorAll('.state');
-    states.forEach(state => {
-        const stateCode = state.dataset.state;
-        const stateData = stateVoteData[stateCode];
-        
-        if (stateData) {
-            // Update the state's data attributes with real values
-            state.dataset.yes = stateData.yes;
-            state.dataset.no = stateData.no;
-            state.dataset.depends = stateData.depends;
-            
-            // Update the state color
-            updateStateColor(state);
-        }
-    });
 }
 
 // Update global poll results from state data
@@ -278,7 +265,7 @@ async function submitVoteToSupabase(voteType) {
                 stateVoteData[userState].total++;
                 
                 // Update the specific state on the map
-                updateStateOnMap(userState);
+                // updateStateOnMap(userState); // REMOVED
                 
                 // Update global results
                 pollResults[voteType]++;
@@ -301,20 +288,6 @@ async function getUserState() {
     // 2. Ask user to select their state
     // 3. Use browser location API (with permission)
     return 'CA'; // Default to California
-}
-
-// Update specific state on the map
-function updateStateOnMap(stateCode) {
-    const state = document.querySelector(`[data-state="${stateCode}"]`);
-    if (state) {
-        const stateData = stateVoteData[stateCode];
-        if (stateData) {
-            state.dataset.yes = stateData.yes;
-            state.dataset.no = stateData.no;
-            state.dataset.depends = stateData.depends;
-            updateStateColor(state);
-        }
-    }
 }
 
 // Show vote success message
@@ -408,7 +381,7 @@ function nextPoll() {
     document.querySelectorAll('.poll-btn').forEach(btn => btn.classList.remove('selected'));
     
     // Update map colors based on new results
-    updateMapColors();
+    // updateMapColors(); // REMOVED
     
     // Update facts with new random selections
     updateRandomFacts();
@@ -416,180 +389,11 @@ function nextPoll() {
     console.log(`Randomized to question ${currentPollIndex + 1}: ${pollQuestions[currentPollIndex]}`);
 }
 
-// Map functionality
-function initializeMap() {
-    const states = document.querySelectorAll('.state');
-    
-    states.forEach(state => {
-        // Remove click event listener - we only want hover
-        state.addEventListener('mouseenter', function(e) {
-            this.style.strokeWidth = '3';
-            showStateTooltip(this, e);
-        });
-        
-        state.addEventListener('mouseleave', function() {
-            this.style.strokeWidth = '1';
-            hideStateTooltip();
-        });
-    });
-    
-    // Don't call updateMapColors here - it will be called after loading real data
-}
-
-function updateStateColor(state) {
-    const yes = parseInt(state.dataset.yes);
-    const no = parseInt(state.dataset.no);
-    const depends = parseInt(state.dataset.depends);
-    
-    // Remove existing classes
-    state.classList.remove('yes-majority', 'no-majority', 'depends-majority');
-    
-    // Determine majority
-    if (yes > no && yes > depends) {
-        state.classList.add('yes-majority');
-    } else if (no > yes && no > depends) {
-        state.classList.add('no-majority');
-    } else {
-        state.classList.add('depends-majority');
-    }
-}
-
-function showStateTooltip(state, event) {
-    const stateCode = state.dataset.state;
-    const yes = parseInt(state.dataset.yes);
-    const no = parseInt(state.dataset.no);
-    const depends = parseInt(state.dataset.depends);
-    const comment = getStateComment(stateCode);
-    
-    // Get full state name
-    const fullStateName = getFullStateName(stateCode);
-    
-    // Create or update tooltip
-    let tooltip = document.querySelector('.state-tooltip');
-    if (!tooltip) {
-        tooltip = document.createElement('div');
-        tooltip.className = 'state-tooltip';
-        document.body.appendChild(tooltip);
-    }
-    
-    tooltip.innerHTML = `
-        <h4>${fullStateName}</h4>
-        <div class="state-stats">
-            <div class="stat">
-                <span class="stat-label">Yes</span>
-                <span class="stat-value">${yes}%</span>
-            </div>
-            <div class="stat">
-                <span class="stat-label">No</span>
-                <span class="stat-value">${no}%</span>
-            </div>
-            <div class="stat">
-                <span class="stat-label">Dep</span>
-                <span class="stat-value">${depends}%</span>
-            </div>
-        </div>
-        <p class="state-comment">${comment}</p>
-    `;
-    
-    // Position tooltip closer to mouse pointer and ensure it stays within viewport
-    const tooltipWidth = 200; // Approximate tooltip width
-    const tooltipHeight = 120; // Approximate tooltip height
-    
-    let left = event.clientX + 8;
-    let top = event.clientY - 8;
-    
-    // Check if tooltip would go off the right edge
-    if (left + tooltipWidth > window.innerWidth) {
-        left = event.clientX - tooltipWidth - 8;
-    }
-    
-    // Check if tooltip would go off the bottom edge
-    if (top + tooltipHeight > window.innerHeight) {
-        top = event.clientY - tooltipHeight - 8;
-    }
-    
-    // Ensure tooltip doesn't go off the left or top edges
-    left = Math.max(8, left);
-    top = Math.max(8, top);
-    
-    tooltip.style.left = left + 'px';
-    tooltip.style.top = top + 'px';
-    tooltip.style.display = 'block';
-}
-
-function hideStateTooltip() {
-    const tooltip = document.querySelector('.state-tooltip');
-    if (tooltip) {
-        tooltip.style.display = 'none';
-    }
-}
-
-function getStateComment(stateCode) {
-    const comments = {
-        'CA': 'We love our baristas here!',
-        'NY': 'Everything is expensive, including tips.',
-        'TX': 'Southern hospitality means generous tipping.',
-        'FL': 'Tourist areas expect higher tips.',
-        'WA': 'Tech money flows into coffee shops.',
-        'OR': 'Portland is all about the coffee culture.',
-        'CO': 'Mountain lifestyle, mountain tips.',
-        'IL': 'Chicago knows good service.',
-        'PA': 'Philly has strong opinions on everything.',
-        'MA': 'Boston values quality service.',
-        'MI': 'Great Lakes, great tipping habits.',
-        'OH': 'Midwest hospitality at its finest.',
-        'GA': 'Atlanta sets the standard for the South.',
-        'NC': 'Research Triangle has diverse views.',
-        'VA': 'DC area influences tipping culture.',
-        'TN': 'Music City knows how to tip.',
-        'MO': 'Gateway to the West, gateway to tipping.',
-        'MN': 'Minnesota nice extends to tipping.',
-        'WI': 'Cheese and tipping go hand in hand.',
-        'IA': 'Corn fields and tipping traditions.',
-        'NE': 'Cornhusker state, cornhusker tips.',
-        'KS': 'Wheat state, wheat-sized tips.',
-        'OK': 'Sooner state, sooner tipping.',
-        'AR': 'Natural state, natural tipping habits.',
-        'LA': 'Cajun culture, cajun tipping.',
-        'MS': 'Magnolia state, magnolia-sized tips.',
-        'AL': 'Heart of Dixie, heart of tipping.',
-        'SC': 'Palmetto state, palmetto-sized tips.',
-        'AK': 'Last frontier, frontier tipping.',
-        'HI': 'Aloha spirit, aloha tips.',
-        'NV': 'Sin City, sin-sized tips.',
-        'ID': 'Gem state, gem-sized tips.',
-        'UT': 'Beehive state, beehive tipping.',
-        'AZ': 'Grand Canyon state, grand tipping.',
-        'MT': 'Big Sky country, big sky tips.',
-        'WY': 'Cowboy state, cowboy tipping.',
-        'NM': 'Land of enchantment, enchanting tips.',
-        'ND': 'Peace Garden state, peaceful tipping.',
-        'SD': 'Mount Rushmore state, monumental tips.',
-        'CT': 'Constitution state, constitutional tipping.',
-        'RI': 'Ocean state, ocean-sized tips.',
-        'VT': 'Green Mountain state, green tipping.',
-        'NH': 'Granite state, granite-solid tips.',
-        'ME': 'Pine Tree state, tree-sized tips.',
-        'MD': 'Old Line state, old-line tipping.',
-        'DE': 'First state, first-rate tipping.',
-        'WV': 'Mountain state, mountain-sized tips.'
-    };
-    
-    return comments[stateCode] || 'This state has interesting tipping perspectives.';
-}
-
-// Update map colors (now uses real data)
-function updateMapColors() {
-    const states = document.querySelectorAll('.state');
-    states.forEach(state => {
-        updateStateColor(state);
-    });
-}
-
 // Comments functionality
 function initializeComments() {
     initializeCommentActions();
     initializeCommentFilters();
+    initializeCommentSystem(); // Initialize the new comment system
 }
 
 function initializeCommentFilters() {
@@ -677,74 +481,387 @@ function initializeCommentActions() {
     });
 }
 
-function addComment() {
-    const commentText = document.getElementById('newComment').value.trim();
-    if (!commentText) return;
+// Comment system functionality
+function initializeCommentSystem() {
+    console.log('🔧 Initializing comment system...');
     
-    const commentsContainer = document.querySelector('.comments-container');
-    const newComment = document.createElement('div');
-    newComment.className = 'comment';
+    const commentTextarea = document.getElementById('newComment');
+    const charCount = document.querySelector('.char-count');
     
-    const randomNames = ['Alex', 'Jordan', 'Taylor', 'Casey', 'Riley', 'Quinn', 'Avery', 'Morgan', 'Drew', 'Blake'];
-    const randomName = randomNames[Math.floor(Math.random() * randomNames.length)];
+    if (!commentTextarea || !charCount) {
+        console.error('❌ Comment elements not found:', { commentTextarea, charCount });
+        return;
+    }
     
-    // Set current timestamp for the new comment
-    const now = new Date();
-    const timestamp = now.toISOString();
+    console.log('✅ Comment elements found, setting up event listeners...');
     
-    newComment.innerHTML = `
+    // Character counter
+    commentTextarea.addEventListener('input', function() {
+        const length = this.value.length;
+        charCount.textContent = `${length} character${length !== 1 ? 's' : ''}`;
+        
+        // Change color based on length
+        if (length > 500) {
+            charCount.style.color = '#dc2626'; // Red for long comments
+        } else if (length > 300) {
+            charCount.style.color = '#f59e0b'; // Orange for medium comments
+        } else {
+            charCount.style.color = '#6b7280'; // Default gray
+        }
+    });
+    
+    // Enter key to submit (Shift+Enter for new line)
+    commentTextarea.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            addComment();
+        }
+    });
+    
+    console.log('✅ Event listeners set up, initializing sample comments...');
+    
+    // Initialize with sample comments
+    initializeSampleComments();
+}
+
+// Initialize sample comments
+function initializeSampleComments() {
+    console.log('📝 Initializing sample comments...');
+    
+    const sampleComments = [
+        {
+            name: 'Elizabeth',
+            text: 'Tips should be earned, not expected. Great service deserves great tips!',
+            likes: 35,
+            dislikes: 18,
+            timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
+        },
+        {
+            name: 'Marcus',
+            text: 'I always tip 20% for good service. It\'s part of the dining experience.',
+            likes: 28,
+            dislikes: 12,
+            timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000) // 4 hours ago
+        },
+        {
+            name: 'Sarah',
+            text: 'The tipping culture is getting out of hand. Everywhere asks for tips now.',
+            likes: 42,
+            dislikes: 8,
+            timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000) // 6 hours ago
+        },
+        {
+            name: 'David',
+            text: 'I tip based on service quality, not percentage. Sometimes 15%, sometimes 25%.',
+            likes: 31,
+            dislikes: 15,
+            timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000) // 8 hours ago
+        },
+        {
+            name: 'Jennifer',
+            text: 'Counter service shouldn\'t expect tips. I only tip for table service.',
+            likes: 19,
+            dislikes: 22,
+            timestamp: new Date(Date.now() - 10 * 60 * 60 * 1000) // 10 hours ago
+        },
+        {
+            name: 'Robert',
+            text: 'Tipping is a way to show appreciation. I always leave something.',
+            likes: 26,
+            dislikes: 9,
+            timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000) // 12 hours ago
+        },
+        {
+            name: 'Amanda',
+            text: 'The suggested tip percentages keep going up. 18% used to be standard.',
+            likes: 38,
+            dislikes: 11,
+            timestamp: new Date(Date.now() - 14 * 60 * 60 * 1000) // 14 hours ago
+        },
+        {
+            name: 'Michael',
+            text: 'I tip delivery drivers extra in bad weather. They\'re taking risks.',
+            likes: 33,
+            dislikes: 7,
+            timestamp: new Date(Date.now() - 16 * 60 * 60 * 1000) // 16 hours ago
+        },
+        {
+            name: 'Lisa',
+            text: 'Should we abolish tipping and just pay fair wages?',
+            likes: 45,
+            dislikes: 20,
+            timestamp: new Date(Date.now() - 18 * 60 * 60 * 1000) // 18 hours ago
+        },
+        {
+            name: 'Thomas',
+            text: 'I tip my barber well. Good haircuts are worth it.',
+            likes: 22,
+            dislikes: 6,
+            timestamp: new Date(Date.now() - 20 * 60 * 60 * 1000) // 20 hours ago
+        }
+    ];
+    
+    console.log('✅ Sample comments created:', sampleComments.length);
+    
+    // Store all comments globally
+    window.allComments = sampleComments;
+    
+    console.log('✅ Comments stored globally, displaying first 3...');
+    
+    // Show only first 3 comments initially
+    displayComments(0, 3);
+    
+    // Show load more button if there are more comments
+    if (sampleComments.length > 3) {
+        document.getElementById('loadMoreSection').style.display = 'block';
+        console.log('✅ Load more button shown');
+    }
+    
+    console.log('✅ Sample comments initialization complete');
+}
+
+// Display comments with pagination
+function displayComments(startIndex, count) {
+    console.log(`🔄 Displaying comments from ${startIndex} to ${startIndex + count - 1}`);
+    
+    const commentsContainer = document.getElementById('commentsContainer');
+    
+    if (!commentsContainer) {
+        console.error('❌ Comments container not found');
+        return;
+    }
+    
+    console.log('✅ Comments container found:', commentsContainer);
+    
+    const endIndex = Math.min(startIndex + count, window.allComments.length);
+    console.log(`📊 Total comments available: ${window.allComments.length}, showing ${startIndex} to ${endIndex - 1}`);
+    
+    // Clear existing comments
+    commentsContainer.innerHTML = '';
+    console.log('🧹 Cleared existing comments');
+    
+    // Add comments in range
+    for (let i = startIndex; i < endIndex; i++) {
+        const comment = window.allComments[i];
+        console.log(`➕ Adding comment ${i + 1}:`, comment.name, comment.text.substring(0, 30) + '...');
+        const commentElement = createCommentElement(comment);
+        commentsContainer.appendChild(commentElement);
+    }
+    
+    console.log(`✅ Added ${endIndex - startIndex} comments to container`);
+    
+    // Update load more button
+    updateLoadMoreButton(endIndex);
+}
+
+// Create comment element
+function createCommentElement(comment) {
+    const commentElement = document.createElement('div');
+    commentElement.className = 'comment';
+    commentElement.dataset.likes = comment.likes;
+    commentElement.dataset.dislikes = comment.dislikes;
+    commentElement.dataset.timestamp = comment.timestamp.toISOString();
+    
+    commentElement.innerHTML = `
         <div class="comment-header">
             <div class="comment-avatar">
                 <i class="fas fa-user"></i>
             </div>
             <div class="comment-info">
-                <div class="comment-author">${randomName}</div>
-                <div class="comment-text">${commentText}</div>
+                <div class="comment-author">${comment.name}</div>
+                <div class="comment-text">${comment.text}</div>
+                <div class="comment-time">${formatTimeAgo(comment.timestamp)}</div>
             </div>
         </div>
         <div class="comment-actions">
             <button class="action-btn like-btn">
                 <i class="fas fa-thumbs-up"></i>
-                <span>0</span>
+                <span>${comment.likes}</span>
             </button>
             <button class="action-btn dislike-btn">
                 <i class="fas fa-thumbs-down"></i>
-                <span>0</span>
+                <span>${comment.dislikes}</span>
             </button>
         </div>
     `;
     
-    // Add data attributes for filtering
-    newComment.dataset.likes = '0';
-    newComment.dataset.dislikes = '0';
-    newComment.dataset.timestamp = timestamp;
+    // Initialize actions for comment
+    const likeBtn = commentElement.querySelector('.like-btn');
+    const dislikeBtn = commentElement.querySelector('.dislike-btn');
     
-    commentsContainer.appendChild(newComment);
+    likeBtn.addEventListener('click', function() {
+        const count = this.querySelector('span');
+        const newCount = parseInt(count.textContent) + 1;
+        count.textContent = newCount;
+        
+        // Update the data attribute for filtering
+        commentElement.dataset.likes = newCount;
+    });
+    
+    dislikeBtn.addEventListener('click', function() {
+        const count = this.querySelector('span');
+        const newCount = parseInt(count.textContent) + 1;
+        count.textContent = newCount;
+        
+        // Update the data attribute for filtering
+        commentElement.dataset.dislikes = newCount;
+    });
+    
+    return commentElement;
+}
+
+// Update load more button
+function updateLoadMoreButton(currentIndex) {
+    const loadMoreSection = document.getElementById('loadMoreSection');
+    const loadMoreBtn = document.querySelector('.load-more-btn');
+    
+    if (currentIndex >= window.allComments.length) {
+        // All comments loaded
+        loadMoreSection.style.display = 'none';
+    } else {
+        // More comments available
+        loadMoreSection.style.display = 'block';
+        const remaining = window.allComments.length - currentIndex;
+        const nextBatch = Math.min(3, remaining);
+        loadMoreBtn.innerHTML = `
+            <i class="fas fa-chevron-down"></i>
+            Load ${nextBatch} More Comment${nextBatch !== 1 ? 's' : ''}
+        `;
+    }
+}
+
+// Load more comments
+function loadMoreComments() {
+    const currentCount = document.querySelectorAll('#commentsContainer .comment').length;
+    const nextBatch = Math.min(3, window.allComments.length - currentCount);
+    
+    if (nextBatch > 0) {
+        displayComments(currentCount, currentCount + nextBatch);
+    }
+}
+
+// Set anonymous name
+function setAnonymous() {
+    const nameInput = document.getElementById('commenterName');
+    const anonymousBtn = document.querySelector('.anonymous-btn');
+    
+    if (nameInput.value.trim() === '') {
+        nameInput.value = 'Anonymous';
+        anonymousBtn.classList.add('active');
+    } else {
+        nameInput.value = '';
+        anonymousBtn.classList.remove('active');
+    }
+}
+
+function addComment() {
+    const commentText = document.getElementById('newComment').value.trim();
+    const commenterName = document.getElementById('commenterName').value.trim();
+    
+    if (!commentText) {
+        // Show error message
+        showCommentError('Please enter a comment before posting.');
+        return;
+    }
+    
+    if (commentText.length > 1000) {
+        showCommentError('Comment is too long. Please keep it under 1000 characters.');
+        return;
+    }
+    
+    // Use provided name or generate random name
+    let displayName;
+    if (commenterName && commenterName !== 'Anonymous') {
+        displayName = commenterName;
+    } else if (commenterName === 'Anonymous') {
+        displayName = 'Anonymous';
+    } else {
+        // Generate random name if none provided
+        const randomNames = ['Alex', 'Jordan', 'Taylor', 'Casey', 'Riley', 'Quinn', 'Avery', 'Morgan', 'Drew', 'Blake', 'Sam', 'Parker', 'Emery', 'Rowan', 'Sage'];
+        displayName = randomNames[Math.floor(Math.random() * randomNames.length)];
+    }
+    
+    // Create new comment object
+    const newComment = {
+        name: displayName,
+        text: commentText,
+        likes: 0,
+        dislikes: 0,
+        timestamp: new Date()
+    };
+    
+    // Add to global comments array at the beginning (most recent first)
+    window.allComments.unshift(newComment);
+    
+    // Limit total comments to 10
+    if (window.allComments.length > 10) {
+        window.allComments = window.allComments.slice(0, 10);
+    }
+    
+    // Refresh display to show only first 3 comments
+    displayComments(0, 3);
+    
+    // Show load more button if there are more than 3 comments
+    if (window.allComments.length > 3) {
+        document.getElementById('loadMoreSection').style.display = 'block';
+    }
+    
+    // Clear form
     document.getElementById('newComment').value = '';
+    document.getElementById('commenterName').value = '';
+    document.querySelector('.char-count').textContent = '0 characters';
+    document.querySelector('.anonymous-btn').classList.remove('active');
     
-    // Initialize actions for new comment
-    const newLikeBtn = newComment.querySelector('.like-btn');
-    const newDislikeBtn = newComment.querySelector('.dislike-btn');
+    // Show success message
+    showCommentSuccess('Comment posted successfully!');
+}
+
+// Show comment error message
+function showCommentError(message) {
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'comment-error';
+    errorDiv.innerHTML = `
+        <i class="fas fa-exclamation-circle"></i>
+        <span>${message}</span>
+    `;
     
-    newLikeBtn.addEventListener('click', function() {
-        const count = this.querySelector('span');
-        const newCount = parseInt(count.textContent) + 1;
-        count.textContent = newCount;
-        
-        // Update the data attribute for filtering
-        const comment = this.closest('.comment');
-        comment.dataset.likes = newCount;
-    });
+    const addCommentSection = document.querySelector('.add-comment');
+    addCommentSection.insertBefore(errorDiv, addCommentSection.firstChild);
     
-    newDislikeBtn.addEventListener('click', function() {
-        const count = this.querySelector('span');
-        const newCount = parseInt(count.textContent) + 1;
-        count.textContent = newCount;
-        
-        // Update the data attribute for filtering
-        const comment = this.closest('.comment');
-        comment.dataset.dislikes = newCount;
-    });
+    // Remove error after 5 seconds
+    setTimeout(() => {
+        errorDiv.remove();
+    }, 5000);
+}
+
+// Show comment success message
+function showCommentSuccess(message) {
+    const successDiv = document.createElement('div');
+    successDiv.className = 'comment-success';
+    successDiv.innerHTML = `
+        <i class="fas fa-check-circle"></i>
+        <span>${message}</span>
+    `;
+    
+    const addCommentSection = document.querySelector('.add-comment');
+    addCommentSection.insertBefore(successDiv, addCommentSection.firstChild);
+    
+    // Remove success after 3 seconds
+    setTimeout(() => {
+        successDiv.remove();
+    }, 3000);
+}
+
+// Format time ago
+function formatTimeAgo(date) {
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+    
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    return date.toLocaleDateString();
 }
 
 // Story modal functionality
@@ -903,3 +1020,417 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// Tipping Calculator Functionality
+function initializeTippingCalculator() {
+    console.log('🚀 Initializing Tipping Calculator...');
+    
+    const billInput = document.getElementById('bill-amount');
+    const customTipInput = document.getElementById('custom-tip');
+    const splitCountInput = document.getElementById('split-count');
+    const splitMinusBtn = document.getElementById('split-minus');
+    const splitPlusBtn = document.getElementById('split-plus');
+    const tipButtons = document.querySelectorAll('.tip-btn');
+    
+    console.log('📊 Calculator elements found:', {
+        billInput: !!billInput,
+        customTipInput: !!customTipInput,
+        splitCountInput: !!splitCountInput,
+        splitMinusBtn: !!splitMinusBtn,
+        splitPlusBtn: !!splitPlusBtn,
+        tipButtons: tipButtons.length
+    });
+    
+    if (!billInput || !customTipInput || !splitCountInput || !splitMinusBtn || !splitPlusBtn || tipButtons.length === 0) {
+        console.error('❌ Some calculator elements are missing!');
+        return;
+    }
+    
+    let currentTipPercent = 20;
+    console.log('✅ Calculator initialized successfully with tip percentage:', currentTipPercent);
+    
+    // Tip percentage buttons
+    tipButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Remove active class from all buttons
+            tipButtons.forEach(b => b.classList.remove('active'));
+            // Add active class to clicked button
+            btn.classList.add('active');
+            // Set current tip percentage
+            currentTipPercent = parseInt(btn.dataset.tip);
+            // Clear custom tip input
+            customTipInput.value = '';
+            // Calculate results
+            calculateTip();
+        });
+    });
+    
+    // Custom tip input
+    customTipInput.addEventListener('input', () => {
+        if (customTipInput.value) {
+            // Remove active class from preset buttons
+            tipButtons.forEach(b => b.classList.remove('active'));
+            // Set current tip percentage
+            currentTipPercent = parseFloat(customTipInput.value) || 0;
+            // Calculate results
+            calculateTip();
+        }
+    });
+    
+    // Bill amount input - add multiple event listeners for better responsiveness
+    billInput.addEventListener('input', calculateTip);
+    billInput.addEventListener('keyup', calculateTip);
+    billInput.addEventListener('change', calculateTip);
+    
+    // Split bill buttons
+    splitMinusBtn.addEventListener('click', () => {
+        const currentValue = parseInt(splitCountInput.value);
+        if (currentValue > 1) {
+            splitCountInput.value = currentValue - 1;
+            calculateTip();
+        }
+    });
+    
+    splitPlusBtn.addEventListener('click', () => {
+        const currentValue = parseInt(splitCountInput.value);
+        if (currentValue < 20) {
+            splitCountInput.value = currentValue + 1;
+            calculateTip();
+        }
+    });
+    
+    // Split count input - add multiple event listeners
+    splitCountInput.addEventListener('input', calculateTip);
+    splitCountInput.addEventListener('change', calculateTip);
+    splitCountInput.addEventListener('keyup', calculateTip);
+    
+    // Calculate tip function
+    function calculateTip() {
+        const billAmount = parseFloat(billInput.value) || 0;
+        const tipPercent = currentTipPercent;
+        const splitCount = parseInt(splitCountInput.value) || 1;
+        
+        // Validate inputs
+        if (billAmount < 0) billInput.value = 0;
+        if (splitCount < 1) splitCountInput.value = 1;
+        if (splitCount > 20) splitCountInput.value = 20;
+        
+        const tipAmount = (billAmount * tipPercent) / 100;
+        const totalBill = billAmount + tipAmount;
+        const perPerson = totalBill / splitCount;
+        
+        // Update display with animation
+        updateDisplayWithAnimation('tip-amount', `$${tipAmount.toFixed(2)}`);
+        updateDisplayWithAnimation('total-bill', `$${totalBill.toFixed(2)}`);
+        updateDisplayWithAnimation('per-person', `$${perPerson.toFixed(2)}`);
+        
+        // Add visual feedback for changes
+        if (billAmount > 0) {
+            billInput.style.borderColor = '#10b981';
+            setTimeout(() => {
+                billInput.style.borderColor = '';
+            }, 500);
+        }
+    }
+    
+    // Update display with smooth animation
+    function updateDisplayWithAnimation(elementId, newValue) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            // Add a subtle animation class
+            element.style.transform = 'scale(1.05)';
+            element.style.color = '#10b981';
+            
+            // Update the value
+            element.textContent = newValue;
+            
+            // Reset animation
+            setTimeout(() => {
+                element.style.transform = 'scale(1)';
+                element.style.color = '';
+            }, 200);
+        }
+    }
+    
+    // Initialize with default values and trigger calculation
+    calculateTip();
+    
+    // Test the calculator
+    console.log('🧮 Testing calculator with $50 bill...');
+    billInput.value = '50';
+    calculateTip();
+    
+    // Add some visual enhancements
+    billInput.addEventListener('focus', () => {
+        billInput.parentElement.style.transform = 'scale(1.02)';
+    });
+    
+    billInput.addEventListener('blur', () => {
+        billInput.parentElement.style.transform = 'scale(1)';
+    });
+    
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (e.target === billInput) {
+            if (e.key === 'Enter') {
+                customTipInput.focus();
+            }
+        }
+    });
+    
+    // Auto-format bill input for better UX
+    billInput.addEventListener('blur', () => {
+        if (billInput.value && !isNaN(billInput.value)) {
+            const formatted = parseFloat(billInput.value).toFixed(2);
+            if (formatted !== billInput.value) {
+                billInput.value = formatted;
+                calculateTip();
+            }
+        }
+    });
+}
+
+// AI Tipping Advisor Functionality
+function initializeAITippingAdvisor() {
+    console.log('🤖 Initializing AI Tipping Advisor...');
+    
+    const customScenarioText = document.getElementById('custom-scenario-text');
+    const getAdviceBtn = document.getElementById('get-advice-btn');
+    const aiRecommendation = document.getElementById('ai-recommendation');
+    const regenerateBtn = document.getElementById('regenerate-btn');
+    const copyBtn = document.getElementById('copy-btn');
+    const recommendationActions = document.getElementById('recommendation-actions');
+    const scenarioChips = document.querySelectorAll('.scenario-chip');
+    
+    console.log('🤖 AI Advisor elements found:', {
+        customScenarioText: !!customScenarioText,
+        getAdviceBtn: !!getAdviceBtn,
+        aiRecommendation: !!aiRecommendation,
+        regenerateBtn: !!regenerateBtn,
+        copyBtn: !!copyBtn,
+        recommendationActions: !!recommendationActions,
+        scenarioChips: scenarioChips.length
+    });
+    
+    // AI advice database for different scenarios
+    const aiAdviceDatabase = {
+        restaurant: {
+            title: "Restaurant Dining",
+            advice: "For sit-down restaurant service, tipping is expected and important for staff wages.",
+            tipAmount: "15-20% of pre-tax bill",
+            reasoning: "Restaurant servers typically earn below minimum wage and rely heavily on tips. 15% is standard for good service, 20% for excellent service. Consider tipping more for exceptional service or if you're a regular customer.",
+            examples: "• $50 bill = $7.50-$10 tip\n• $100 bill = $15-$20 tip\n• Always tip on the pre-tax amount"
+        },
+        delivery: {
+            title: "Food Delivery",
+            advice: "Delivery drivers use their own vehicles and often face challenging conditions.",
+            tipAmount: "$3-5 minimum or 15-20%",
+            reasoning: "Delivery drivers cover gas, vehicle maintenance, and often work in poor weather. Base your tip on distance, weather conditions, and order size. A minimum tip ensures drivers are fairly compensated.",
+            examples: "• Short distance: $3-4 tip\n• Long distance/poor weather: $5-8 tip\n• Large orders: Consider 15-20%"
+        },
+        coffee: {
+            title: "Coffee Shop",
+            advice: "Tipping at coffee shops is appreciated but not always expected for simple orders.",
+            tipAmount: "$1-2 or 10-15%",
+            reasoning: "For simple coffee orders, $1-2 is generous. For complex drinks (lattes, cappuccinos), consider 10-15%. Baristas often work for minimum wage and appreciate tips for their skill and service.",
+            examples: "• Simple coffee: $1 tip\n• Complex drink: $2 tip\n• Multiple drinks: $3-5 total tip"
+        },
+        barber: {
+            title: "Barber/Hair Salon",
+            advice: "Hair services are skilled work that typically warrants a tip.",
+            tipAmount: "15-20% of service cost",
+            reasoning: "Hair stylists and barbers are skilled professionals who often pay for their own tools and supplies. 15% is standard, 20% for exceptional work. Consider tipping more for complex services or if you're very satisfied.",
+            examples: "• $30 haircut = $4.50-$6 tip\n• $80 color service = $12-$16 tip\n• $150 full service = $22.50-$30 tip"
+        },
+        hotel: {
+            title: "Hotel Service",
+            advice: "Hotel staff often work behind the scenes and appreciate recognition for their service.",
+            tipAmount: "Varies by service type",
+            reasoning: "Different hotel services have different tipping norms. Housekeeping, bellhops, and valet services are commonly tipped. Concierge services are typically tipped for special arrangements.",
+            examples: "• Housekeeping: $2-5 per night\n• Bellhop: $2-5 per bag\n• Valet: $2-5 when retrieving car\n• Concierge: $5-20 for special services"
+        },
+        rideshare: {
+            title: "Rideshare/Taxi",
+            advice: "Tipping rideshare drivers is appreciated and helps support their income.",
+            tipAmount: "$2-5 or 15-20%",
+            reasoning: "Rideshare drivers often work long hours and face significant vehicle expenses. Base your tip on trip length, weather conditions, and service quality. Consider tipping more for airport runs or late-night rides.",
+            examples: "• Short trip: $2-3 tip\n• Medium trip: $3-5 tip\n• Long trip/airport: $5-10 tip\n• Poor weather: Add $1-2"
+        }
+    };
+    
+    // Scenario chip click handlers
+    scenarioChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            const scenario = chip.dataset.scenario;
+            const advice = aiAdviceDatabase[scenario];
+            
+            if (advice) {
+                // Fill the textarea with a sample scenario
+                const sampleText = getSampleScenarioText(scenario);
+                customScenarioText.value = sampleText;
+                
+                // Show the advice
+                showAIAdvice(advice);
+                
+                // Highlight the clicked chip
+                scenarioChips.forEach(c => c.style.background = 'white');
+                                            chip.style.background = '#e8f5e8';
+                            chip.style.borderColor = '#8AA624';
+                            chip.style.color = '#5a6b3a';
+            }
+        });
+    });
+    
+    // Get advice button click handler
+    getAdviceBtn.addEventListener('click', () => {
+        const scenarioText = customScenarioText.value.trim();
+        if (scenarioText) {
+            showCustomScenarioAdvice(scenarioText);
+        } else {
+            // Show error message
+            aiRecommendation.innerHTML = `
+                <div class="default-message">
+                    <div class="ai-illustration">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <p>Please describe your tipping situation to get personalized advice!</p>
+                </div>
+            `;
+            recommendationActions.style.display = 'none';
+        }
+    });
+    
+    // Enter key handler for textarea
+    customScenarioText.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && e.ctrlKey) {
+            e.preventDefault();
+            getAdviceBtn.click();
+        }
+    });
+    
+    // Show AI advice for predefined scenarios
+    function showAIAdvice(advice) {
+        aiRecommendation.innerHTML = `
+            <div class="ai-advice">
+                <h4>${advice.title}</h4>
+                <p>${advice.advice}</p>
+                <div class="tip-amount">💡 ${advice.tipAmount}</div>
+                <div class="reasoning">
+                    <strong>Why this amount?</strong><br>
+                    ${advice.reasoning}
+                </div>
+                <p><strong>Examples:</strong><br>
+                ${advice.examples}</p>
+            </div>
+        `;
+        
+        showActionButtons();
+    }
+    
+    // Show AI advice for custom scenarios
+    function showCustomScenarioAdvice(scenarioText) {
+        // Show loading state
+        aiRecommendation.innerHTML = `
+            <div class="default-message">
+                <div class="loading-spinner"></div>
+                <p>Analyzing your scenario...</p>
+            </div>
+        `;
+        
+        // Simulate AI processing (in a real app, this would call an AI API)
+        setTimeout(() => {
+            const customAdvice = generateCustomAdvice(scenarioText);
+            aiRecommendation.innerHTML = `
+                <div class="ai-advice">
+                    <h4>Custom Scenario Analysis</h4>
+                    <p>${customAdvice.advice}</p>
+                    <div class="tip-amount">💡 ${customAdvice.tipAmount}</div>
+                    <div class="reasoning">
+                        <strong>AI Reasoning:</strong><br>
+                        ${customAdvice.reasoning}
+                    </div>
+                    <p><strong>Key Factors:</strong><br>
+                    ${customAdvice.factors}</p>
+                </div>
+            `;
+            showActionButtons();
+        }, 1500);
+    }
+    
+    // Generate sample scenario text for chips
+    function getSampleScenarioText(scenario) {
+        const samples = {
+            restaurant: "I'm dining at a nice restaurant, the service was excellent, and my bill is $85 before tax. The server was very attentive and made great recommendations.",
+            delivery: "I ordered food delivery during bad weather, the driver had to drive 3 miles, and my order was $45. The food arrived hot and on time.",
+            coffee: "I'm at a coffee shop, ordered a complex latte with custom milk and syrups. The barista was very skilled and the drink costs $6.50.",
+            barber: "I got a haircut and beard trim at a barber shop. The service took 45 minutes and cost $35. The barber was very professional and did excellent work.",
+            hotel: "I'm staying at a hotel for 3 nights. The housekeeping staff has been very thorough, and the bellhop helped with my luggage when I arrived.",
+            rideshare: "I took a rideshare to the airport early in the morning. The driver was very helpful with my luggage and the trip was 12 miles long."
+        };
+        return samples[scenario] || "Describe your tipping situation here...";
+    }
+    
+    // Generate custom advice based on scenario text
+    function generateCustomAdvice(scenarioText) {
+        const text = scenarioText.toLowerCase();
+        
+        // Simple keyword-based analysis (in a real app, this would use AI/ML)
+        let tipAmount = "15-20%";
+        let reasoning = "Based on your description, this appears to be a service that typically warrants tipping.";
+        let factors = "• Service quality\n• Industry standards\n• Your satisfaction level";
+        
+        if (text.includes('massage') || text.includes('spa')) {
+            tipAmount = "15-20% of service cost";
+            reasoning = "Massage and spa services are skilled therapeutic work that typically warrant tipping. The amount depends on service quality and duration.";
+            factors = "• Service duration\n• Therapist skill level\n• Facility quality\n• Your satisfaction";
+        } else if (text.includes('pet') || text.includes('dog') || text.includes('cat')) {
+            tipAmount = "$5-15 or 15-20%";
+            reasoning = "Pet services like grooming, walking, or sitting are specialized services that often warrant tipping. Consider the complexity and duration of the service.";
+            factors = "• Service complexity\n• Pet behavior\n• Service duration\n• Professional skill";
+        } else if (text.includes('moving') || text.includes('furniture')) {
+            tipAmount = "$20-50 per person";
+            reasoning = "Moving services are physically demanding work that typically warrants tipping. The amount depends on the difficulty and duration of the move.";
+            factors = "• Move complexity\n• Distance\n• Number of items\n• Weather conditions";
+        }
+        
+        return {
+            advice: "Based on your specific situation, here's my AI-powered tipping recommendation:",
+            tipAmount: tipAmount,
+            reasoning: reasoning,
+            factors: factors
+        };
+    }
+    
+    // Show action buttons
+    function showActionButtons() {
+        recommendationActions.style.display = 'flex';
+    }
+    
+    // Regenerate advice button
+    regenerateBtn.addEventListener('click', () => {
+        const scenarioText = customScenarioText.value.trim();
+        if (scenarioText) {
+            showCustomScenarioAdvice(scenarioText);
+        }
+    });
+    
+    // Copy advice button
+    copyBtn.addEventListener('click', () => {
+        const adviceText = aiRecommendation.textContent;
+        navigator.clipboard.writeText(adviceText).then(() => {
+            // Show temporary success message
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            copyBtn.style.color = '#10b981';
+            copyBtn.style.borderColor = '#10b981';
+            
+            setTimeout(() => {
+                copyBtn.innerHTML = originalText;
+                copyBtn.style.color = '';
+                copyBtn.style.borderColor = '';
+            }, 2000);
+        });
+    });
+    
+    console.log('✅ AI Tipping Advisor initialized successfully!');
+}
