@@ -136,6 +136,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize AI tipping advisor
     initializeAITippingAdvisor();
+
+    // Initialize client-side routing
+    initializeRouting();
+    addRouteAttributes();
 });
 
 // Randomize the poll question
@@ -1433,4 +1437,159 @@ function initializeAITippingAdvisor() {
     });
     
     console.log('✅ AI Tipping Advisor initialized successfully!');
+}
+
+// Client-side routing functionality
+function initializeRouting() {
+    console.log('🛣️ Initializing client-side routing...');
+    
+    // Handle initial route
+    handleRoute();
+    
+    // Listen for browser back/forward
+    window.addEventListener('popstate', handleRoute);
+    
+    // Handle internal navigation
+    document.addEventListener('click', function(e) {
+        if (e.target.matches('[data-route]')) {
+            e.preventDefault();
+            const route = e.target.getAttribute('data-route');
+            navigateToRoute(route);
+        }
+    });
+}
+
+// Handle route changes
+function handleRoute() {
+    const path = window.location.pathname;
+    console.log('📍 Current route:', path);
+    
+    // Remove trailing slash and get route
+    const route = path.replace(/\/$/, '') || '/poll';
+    
+    // Scroll to appropriate section
+    scrollToSection(route);
+    
+    // Update page title
+    updatePageTitle(route);
+}
+
+// Navigate to a specific route
+function navigateToRoute(route) {
+    console.log('🚀 Navigating to:', route);
+    
+    // Update URL without page reload
+    const url = route === '/poll' ? '/' : route;
+    window.history.pushState({}, '', url);
+    
+    // Scroll to section
+    scrollToSection(route);
+    
+    // Update page title
+    updatePageTitle(route);
+}
+
+// Scroll to the appropriate section based on route
+function scrollToSection(route) {
+    let targetSection;
+    
+    switch(route) {
+        case '/poll':
+        case '/':
+            targetSection = document.querySelector('.header');
+            break;
+        case '/calculator':
+            targetSection = document.querySelector('.calculator-section');
+            break;
+        case '/advice':
+            targetSection = document.querySelector('.ai-advisor-section');
+            break;
+        case '/funfacts':
+            targetSection = document.querySelector('.awareness-section');
+            break;
+        case '/discussions':
+            targetSection = document.querySelector('.comments-section');
+            break;
+        default:
+            targetSection = document.querySelector('.header');
+            break;
+    }
+    
+    if (targetSection) {
+        // Smooth scroll to section
+        targetSection.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+        });
+        
+        // Add highlight effect
+        highlightSection(targetSection);
+        
+        console.log('✅ Scrolled to section:', route);
+    } else {
+        console.warn('⚠️ Section not found for route:', route);
+    }
+}
+
+// Update page title based on route
+function updatePageTitle(route) {
+    let title;
+    
+    switch(route) {
+        case '/poll':
+        case '/':
+            title = 'TippingPoll - Vote on Tipping Culture';
+            break;
+        case '/calculator':
+            title = 'Tipping Calculator - TippingPoll';
+            break;
+        case '/advice':
+            title = 'AI Tipping Advice - TippingPoll';
+            break;
+        case '/funfacts':
+            title = 'Tipping Fun Facts - TippingPoll';
+            break;
+        case '/discussions':
+            title = 'Tipping Discussions - TippingPoll';
+            break;
+        default:
+            title = 'TippingPoll - Vote on Tipping Culture';
+            break;
+    }
+    
+    document.title = title;
+    console.log('📝 Updated page title:', title);
+}
+
+// Highlight the section briefly
+function highlightSection(section) {
+    // Remove existing highlights
+    document.querySelectorAll('.section-highlight').forEach(el => {
+        el.classList.remove('section-highlight');
+    });
+    
+    // Add highlight class
+    section.classList.add('section-highlight');
+    
+    // Remove highlight after animation
+    setTimeout(() => {
+        section.classList.remove('section-highlight');
+    }, 2000);
+}
+
+// Add route attributes to existing buttons/links
+function addRouteAttributes() {
+    // Add route to "Submit Your Story" button
+    const submitStoryBtn = document.querySelector('.btn.btn-secondary');
+    if (submitStoryBtn) {
+        submitStoryBtn.setAttribute('data-route', '/discussions');
+    }
+    
+    // Add route to "Next Poll" link
+    const nextPollLink = document.querySelector('.next-poll-link');
+    if (nextPollLink) {
+        nextPollLink.setAttribute('data-route', '/poll');
+    }
+    
+    console.log('🔗 Added route attributes to buttons/links');
 }

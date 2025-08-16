@@ -272,7 +272,7 @@ header {
 /* Stories Section */
 .stories-section {
     padding: 1.5rem 0;
-    background: #DBE4C9;
+    background: white;
 }
 
 .stories-section h2 {
@@ -294,12 +294,12 @@ header {
 }
 
 .story-card {
-    background: #d2e8f6;
+    background: #DBE4C9;
     padding: 1.2rem;
     border-radius: 8px;
     text-align: center;
     transition: transform 0.2s ease;
-    border: 1px solid #b3d9f0;
+    border: 1px solid #c4d4b0;
     min-height: 200px;
     max-height: 200px;
     display: flex;
@@ -1873,6 +1873,28 @@ header {
     color: #9ca3af;
     font-size: 12px;
     margin-top: 4px;
+}
+
+/* Section Highlight Effect for Routing */
+.section-highlight {
+    animation: sectionPulse 2s ease-in-out;
+}
+
+@keyframes sectionPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(138, 166, 36, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 20px rgba(138, 166, 36, 0.3);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(138, 166, 36, 0);
+    }
+}
+
+/* Smooth scrolling for the entire page */
+html {
+    scroll-behavior: smooth;
 }
 
 /* Existing comment styling */

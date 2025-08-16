@@ -268,7 +268,7 @@
                     <p>"Got takeout from a sandwich shop, and they suggested a 20% tip on card reader."</p>
                 </div>
             </div>
-            <button class="btn btn-secondary" onclick="openStoryModal()">Submit Your Story</button>
+            <button class="btn btn-secondary" onclick="openStoryModal()" data-route="/discussions">Submit Your Story</button>
         </div>
     </section>
 
@@ -403,7 +403,18 @@
                     </button>
                 </div>
             </div>
-            <p>&copy; 2024 TippingPoll. All rights reserved.</p>
+            
+            <!-- Route Testing Section (can be removed later) -->
+            <div class="route-testing" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center;">
+                <p style="color: #6b7280; font-size: 14px; margin-bottom: 10px;">Test Routes:</p>
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <a href="/poll" data-route="/poll" style="color: #8AA624; text-decoration: none; padding: 5px 10px; border: 1px solid #8AA624; border-radius: 5px;">Poll</a>
+                    <a href="/calculator" data-route="/calculator" style="color: #8AA624; text-decoration: none; padding: 5px 10px; border: 1px solid #8AA624; border-radius: 5px;">Calculator</a>
+                    <a href="/advice" data-route="/advice" style="color: #8AA624; text-decoration: none; padding: 5px 10px; border: 1px solid #8AA624; border-radius: 5px;">AI Advice</a>
+                    <a href="/funfacts" data-route="/funfacts" style="color: #8AA624; text-decoration: none; padding: 5px 10px; border: 1px solid #8AA624; border-radius: 5px;">Fun Facts</a>
+                    <a href="/discussions" data-route="/discussions" style="color: #8AA624; text-decoration: none; padding: 5px 10px; border: 1px solid #8AA624; border-radius: 5px;">Discussions</a>
+                </div>
+            </div>
         </div>
     </footer>
 
